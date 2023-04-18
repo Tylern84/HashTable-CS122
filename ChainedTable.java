@@ -1,3 +1,5 @@
+import com.sun.jdi.Value;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -21,12 +23,7 @@ public class ChainedTable<K, V> {
 			bucketArray[i] = new LinkedList<Entry<K, V>>();
 
 		}
-
-
 	}
-
-
-
 
 	/**
 	 * _Part 1: Implement this method._
@@ -49,7 +46,23 @@ public class ChainedTable<K, V> {
 		if(value == null){
 			throw new IllegalArgumentException("Value cannot be null");
 		}
-		
+
+		int bucketIndex = Math.abs(key.hashCode() % bucketArray.length);
+
+		LinkedList<Entry<K, V>> bucket = bucketArray[bucketIndex];
+
+		//if the key is already in the hash map
+		for(Entry<K,V> entry : bucket){
+			if(entry.key.equals(key)){
+				V previousValue = entry.value;
+				entry.value = value;
+				return previousValue;
+			}
+		}
+
+		//if the key is not already in the bucket than we will add a new entry
+		bucket.add(new Entry<>(key,value));
+
 		// TODO: implement this
 		return null;
 	}
@@ -66,7 +79,16 @@ public class ChainedTable<K, V> {
 	 * @return the associated value, or null
 	 */
 	public V get(K key) {
+		// Determine the index of the bucket where the entry should be located using hash code and modulo operation
+		int bucketIndex = Math.abs(key.hashCode() % bucketArray.length);
+		LinkedList<Entry<K,V>> bucket = bucketArray[bucketIndex];
+
 		// TODO: implement this
+		for(Entry<K,V> entry : bucket){
+			if(entry.key.equals(key)){
+				return entry.value;
+			}
+		}
 		return null;
 	}
 
